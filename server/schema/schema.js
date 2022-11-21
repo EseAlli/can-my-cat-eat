@@ -5,6 +5,9 @@ const {
   GraphQLString,
   GraphQLList,
   GraphQLSchema,
+  GraphQLNonNull,
+  GraphQLEnumType,
+  GraphQLBoolean,
 } = require("graphql");
 
 const FoodType = new GraphQLObjectType({
@@ -14,6 +17,7 @@ const FoodType = new GraphQLObjectType({
     name: { type: GraphQLString },
     level: { type: GraphQLString },
     description: { type: GraphQLString },
+    canEat: { type: GraphQLBoolean },
     tips: { type: GraphQLString },
   }),
 });
@@ -30,6 +34,45 @@ const RootQuery = new GraphQLObjectType({
   },
 });
 
+const mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    //add Food
+    addFood: {
+      type: FoodType,
+      args: {
+        name: { type: GraphQLNonNull(GraphQLString) },
+        canEat: { type: GraphQLNonNull(GraphQLBoolean) },
+        description: { type: GraphQLNonNull(GraphQLString) },
+        tips: { type: GraphQLString },
+        level: {
+          type: new GraphQLEnumType({
+            name: "ToxicityLevel",
+            values: {
+              non: { value: "Non Toxic" },
+              moderate: { value: "Moderate" },
+              toxic: { value: "Toxic" },
+            },
+            defaultValue: "Toxic",
+          }),
+        },
+      },
+      resolve(parent, args) {
+        const food = new FoodList({
+          name: args.name,
+          tips: args.tips,
+          description: args.description,
+          canEat: args.canEat,
+          level: args.level,
+        });
+
+        return food.save();
+      },
+    },
+  },
+});
+
 module.exports = new GraphQLSchema({
   query: RootQuery,
+  mutation,
 });
