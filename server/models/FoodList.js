@@ -9,7 +9,7 @@ const FoodListSchema = new mongoose.Schema({
   },
   level: {
     type: String,
-    enum: ["Yes", "Moderate"],
+    enum: ["Non Toxic", "Moderate", "Toxic"],
   },
   description: {
     type: String,
