@@ -76,6 +76,15 @@ const mutation = new GraphQLObjectType({
         return food.save();
       },
     },
+
+    //delete Food
+    deleteFood: {
+      type: FoodType,
+      args: { id: { type: GraphQLNonNull(GraphQLID) } },
+      resolve(parent, args) {
+        return FoodList.findByIdAndDelete(args.id);
+      },
+    },
   },
 });
 
